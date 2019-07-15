@@ -15,13 +15,43 @@ ex after running delete('user.json'):
 
 Errors should also be logged (preferably in a human-readable format)
 */
+/**
+ * Log values to log.txt
+ * @param {String} value
+ * returns append file 
+ */
+function log(value) {
+  return fs.appendFile('log.txt', `${value} ${Date.now()}\n`);
+}
 
 /**
  * Logs the value of object[key]
  * @param {string} file
  * @param {string} key
  */
-function get(file, key) {}
+// function get(file, key) {
+//   // read file
+//   return fs.readFile(file, 'utf-8')
+//   // handle promise
+//     .then(data => {
+//       // parse data from string to json 
+//       const parsed = JSON.parse(data);
+//       // use key to get value at object[key]
+//       const value = parsed[key];
+//       if (!value) return log(`ERROR ${key} invalid key on ${file}`);
+//       // append file with data 
+//       return log(value);
+//     })
+//     .catch(err => log(`ERROR no such file or directory ${file}`));
+// }
+
+async function get(file, key) {
+  const data = await fs.readFile(file, 'utf-8');
+  const parsed = JSON.parse(data);
+  const value = parsed[key];
+  if (!value) return log(`ERROR ${key} invalid key on ${file}`);
+  return log(value);
+}
 
 /**
  * Sets the value of object[key] and rewrites object to file
@@ -29,7 +59,14 @@ function get(file, key) {}
  * @param {string} key
  * @param {string} value
  */
-function set(file, key, value) {}
+function set(file, key, value) {
+  return fs.readFile(file, 'utf-8').then(data => {
+    const parsed = JSON.parse(data);
+    parsed[key] = value;
+    const string = JSON.stringify(parsed);
+    return fs.writeFile(file, string);
+  }).catch(err => log(`ERROR ${err}`));
+}
 
 /**
  * Deletes key from object and rewrites object to file
@@ -50,7 +87,9 @@ function deleteFile(file) {}
  * Gracefully errors if the file already exists.
  * @param {string} file JSON filename
  */
-function createFile(file) {}
+function createFile(file) {
+
+}
 
 /**
  * Merges all data into a mega object and logs it.
