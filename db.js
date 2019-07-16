@@ -1,7 +1,6 @@
 /* eslint-disable guard-for-in */
 /* eslint-disable no-restricted-syntax */
 const fs = require('fs').promises;
-const path = require('path');
 /*
 All of your functions must return a promise!
 */
@@ -161,12 +160,11 @@ async function union(fileA, fileB) {
     const parsedB = JSON.parse(second);
     for (const key in parsedA) {
       array.push(key);
-      // for (const key2 in parsedB) {
-      //   if (array.includes(key2)) return;
-      //   array.push(key2);
-      // }
     }
-    console.log(array);
+    for (const key2 in parsedB) {
+      if (!array.includes(key2)) array.push(key2);
+    }
+    return fs.appendFile('log.txt', JSON.stringify(array));
   } catch (err) {
     log(`ERROR ${err}`);
   }
@@ -180,8 +178,24 @@ async function union(fileA, fileB) {
  *    intersect('scott.json', 'andrew.json')
  *    // ['firstname', 'lastname', 'email']
  */
-function intersect(fileA, fileB) {
-
+async function intersect(fileA, fileB) {
+  try {
+    const array = [];
+    const first = await fs.readFile(fileA, 'utf-8');
+    const parsedA = JSON.parse(first);
+    const second = await fs.readFile(fileB, 'utf-8');
+    const parsedB = JSON.parse(second);
+    for (const key in parsedA) {
+      for (const key2 in parsedB) {
+        if (key === key2) {
+          array.push(key);
+        }
+      }
+    }
+    return fs.appendFile('log.txt', JSON.stringify(array));
+  } catch (err) {
+    log(`ERROR ${err}`);
+  }
 }
 
 /**
@@ -192,8 +206,27 @@ function intersect(fileA, fileB) {
  *    difference('scott.json', 'andrew.json')
  *    // ['username']
  */
-function difference(fileA, fileB) {
-  
+async function difference(fileA, fileB) {
+  try {
+    const array = [];
+    const first = await fs.readFile(fileA, 'utf-8');
+    const parsedA = JSON.parse(first);
+    const second = await fs.readFile(fileB, 'utf-8');
+    const parsedB = JSON.parse(second);
+    for (const key in parsedA) {
+      if (!parsedB[key]) {
+        array.push(key);
+      }
+    }
+    for (const key2 in parsedB) {
+      if (!parsedA[key2]) {
+        array.push(key2);
+      }
+    }
+    return fs.appendFile('log.txt', JSON.stringify(array));
+  } catch (err) {
+    log(`ERROR ${err}`);
+  }
 }
 
 module.exports = {
