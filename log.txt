@@ -1,4 +1,2 @@
-scoot 1563230402748
-ERROR no such file or directory hi.json 1563230920711
-ERROR hi invalid key on scott.json 1563231163932
-scoot 1563231545178
+
+{"andrew":{"firstname":"Andrew","lastname":"Maney","email":"amaney@talentpath.com"},"post":{"title":"Async/Await lesson","description":"How to write asynchronous JavaScript","date":"July 15, 2019"},"scott":{"firstname":"Scott","lastname":"Roberts","email":"sroberts@talentpath.com","username":"scoot"}} 1563300216307

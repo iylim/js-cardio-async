@@ -1,4 +1,7 @@
+/* eslint-disable guard-for-in */
+/* eslint-disable no-restricted-syntax */
 const fs = require('fs').promises;
+const path = require('path');
 /*
 All of your functions must return a promise!
 */
@@ -65,7 +68,8 @@ function set(file, key, value) {
     parsed[key] = value;
     const string = JSON.stringify(parsed);
     return fs.writeFile(file, string);
-  }).catch(err => log(`ERROR ${err}`));
+  })
+    .catch(err => log(`ERROR ${err}`));
 }
 
 /**
@@ -73,14 +77,26 @@ function set(file, key, value) {
  * @param {string} file
  * @param {string} key
  */
-function remove(file, key) {}
+function remove(file, key) {
+  return fs.readFile(file, 'utf-8')
+    .then(data => {
+      const parsed = JSON.parse(data);
+      delete parsed[key];
+      return fs.writeFile(file, JSON.stringify(parsed));
+    })
+    .catch(err => log(`ERROR ${err}`));
+}
 
 /**
  * Deletes file.
  * Gracefully errors if the file does not exist.
  * @param {string} file
  */
-function deleteFile(file) {}
+function deleteFile(file) {
+  return fs.unlink(file, 'utf-8')
+    .then(() => log(`${file} deleted!`))
+    .catch(err => log(`ERROR ${err}`));
+}
 
 /**
  * Creates file with an empty object inside.
@@ -88,7 +104,9 @@ function deleteFile(file) {}
  * @param {string} file JSON filename
  */
 function createFile(file) {
-
+  return fs.writeFile(file)
+    .then(() => log(`${file} created!`))
+    .catch(err => log(`ERROR ${err}`));
 }
 
 /**
@@ -109,7 +127,22 @@ function createFile(file) {
  *    }
  * }
  */
-function mergeData() {}
+async function mergeData() {
+  try {
+    const object = {};
+    const directory = await fs.readdir('./');
+    const filtered = directory.filter(file => file.includes('.json') && !file.includes('package'));
+    for (let i = 0; i < filtered.length; ++i) {
+      const fileData = await fs.readFile(filtered[i], 'utf-8');
+      const parsed = JSON.parse(fileData);
+      const fileName = filtered[i].slice(0, filtered[i].indexOf('.'));
+      object[fileName] = parsed;
+    }
+    return fs.appendFile('log.txt', JSON.stringify(object));
+  } catch (err) {
+    log(`ERROR ${err}`);
+  }
+}
 
 /**
  * Takes two files and logs all the properties as a list without duplicates
@@ -119,7 +152,25 @@ function mergeData() {}
  *  union('scott.json', 'andrew.json')
  *  // ['firstname', 'lastname', 'email', 'username']
  */
-function union(fileA, fileB) {}
+async function union(fileA, fileB) {
+  try {
+    const array = [];
+    const first = await fs.readFile(fileA, 'utf-8');
+    const parsedA = JSON.parse(first);
+    const second = await fs.readFile(fileB, 'utf-8');
+    const parsedB = JSON.parse(second);
+    for (const key in parsedA) {
+      array.push(key);
+      // for (const key2 in parsedB) {
+      //   if (array.includes(key2)) return;
+      //   array.push(key2);
+      // }
+    }
+    console.log(array);
+  } catch (err) {
+    log(`ERROR ${err}`);
+  }
+}
 
 /**
  * Takes two files and logs all the properties that both objects share
@@ -129,7 +180,9 @@ function union(fileA, fileB) {}
  *    intersect('scott.json', 'andrew.json')
  *    // ['firstname', 'lastname', 'email']
  */
-function intersect(fileA, fileB) {}
+function intersect(fileA, fileB) {
+
+}
 
 /**
  * Takes two files and logs all properties that are different between the two objects
@@ -139,7 +192,9 @@ function intersect(fileA, fileB) {}
  *    difference('scott.json', 'andrew.json')
  *    // ['username']
  */
-function difference(fileA, fileB) {}
+function difference(fileA, fileB) {
+  
+}
 
 module.exports = {
   get,
