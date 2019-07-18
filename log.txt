@@ -2,3 +2,7 @@
 {"andrew":{"firstname":"Andrew","lastname":"Maney","email":"amaney@talentpath.com"},"post":{"title":"Async/Await lesson","description":"How to write asynchronous JavaScript","date":"July 15, 2019"},"scott":{"firstname":"Scott","lastname":"Roberts","email":"sroberts@talentpath.com","username":"scoot"}} 1563300216307
 ["firstname","lastname","email","username","poop"]
 ["firstname","lastname","email"]
+ERROR TypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be one of type string, Buffer, or URL. Received type undefined 1563466913659
+ERROR Error: ENOENT: no such file or directory, open 'C:\Users\ILim\documents\talentpath\js-cardio-async\and.json' 1563473501144
+ERROR Error: ENOENT: no such file or directory, open 'C:\Users\ILim\documents\talentpath\js-cardio-async\and.json' 1563474100023
+ERROR TypeError: fs.existSync is not a function 1563484499204

@@ -18,13 +18,17 @@ ex after running delete('user.json'):
 Errors should also be logged (preferably in a human-readable format)
 */
 /**
- * Log values to log.txt
+ * Log values to log.txt and throws error if passed
  * @param {String} value
+ * @param {Error} [err]
  * returns append file 
  */
-function log(value) {
-  return fs.appendFile('log.txt', `${value} ${Date.now()}\n`);
+async function log(value, err) {
+  await fs.appendFile('log.txt', `${value} ${Date.now()}\n`);
+  // throw error if exists
+  if (err) throw err;
 }
+
 
 /**
  * Logs the value of object[key]
@@ -68,7 +72,7 @@ function set(file, key, value) {
     const string = JSON.stringify(parsed);
     return fs.writeFile(file, string);
   })
-    .catch(err => log(`ERROR ${err}`));
+    .catch(err => log(`ERROR ${err}`, err));
 }
 
 /**
@@ -102,10 +106,15 @@ function deleteFile(file) {
  * Gracefully errors if the file already exists.
  * @param {string} file JSON filename
  */
-function createFile(file) {
-  return fs.writeFile(file)
-    .then(() => log(`${file} created!`))
-    .catch(err => log(`ERROR ${err}`));
+async function createFile(file, content) {
+  try {
+    if (fs.existSync(file)) {
+      await fs.readFile(file, 'utf-8');
+    }
+    await fs.writeFile(file, JSON.stringify(content));
+  } catch (err) {
+    log(`ERROR ${err}`);
+  }
 }
 
 /**
