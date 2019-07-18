@@ -6,3 +6,18 @@ ERROR TypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be one of type 
 ERROR Error: ENOENT: no such file or directory, open 'C:\Users\ILim\documents\talentpath\js-cardio-async\and.json' 1563473501144
 ERROR Error: ENOENT: no such file or directory, open 'C:\Users\ILim\documents\talentpath\js-cardio-async\and.json' 1563474100023
 ERROR TypeError: fs.existSync is not a function 1563484499204
+andy 1563488036246
+andy 1563488053260
+andy 1563488060605
+andy 1563488190918
+andy 1563488231796
+andy 1563488243997
+{"firstname":"andy","lastname":"Maney","email":"amaney@talentpath.com"} 1563488256740
+{"firstname":"andy","lastname":"Maney","email":"amaney@talentpath.com"} 1563488292104
+andy 1563488518758
+ERROR TypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be one of type string, Buffer, or URL. Received type undefined 1563489279763
+ERROR TypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be one of type string, Buffer, or URL. Received type undefined 1563489397653
+ERROR TypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be one of type string, Buffer, or URL. Received type undefined 1563489469315
+{} 1563489560023
+[object Promise] 1563489577691
+andrew.json deleted! 1563489821108

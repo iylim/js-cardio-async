@@ -1,5 +1,5 @@
 const url = require('url');
-const { getHome, getStatus, setDB, notFound, postWrite } = require('./controller');
+const { getHome, getFile, getStatus, setDB, notFound, postWrite, getValue, deleteValue, deleteFile } = require('./controller');
 
 const handleRoutes = (req, res) => {
   // parse url to an object
@@ -22,9 +22,21 @@ const handleRoutes = (req, res) => {
     return postWrite(req, res, pathname);
   }
 
-  // if (pathname === '/get' && req.method === 'GET') {
+  if (pathname === '/get' && req.method === 'GET') {
+    return getValue(req, res, query);
+  }
 
-  // }
+  if (pathname.startsWith('/get/') && req.method === 'GET') {
+    return getFile(req, res, pathname);
+  }
+
+  if (pathname === '/delete' && req.method === 'DELETE') {
+    return deleteValue(req, res, query);
+  }
+
+  if (pathname.startsWith('/delete/') && req.method === 'DELETE') {
+    return deleteFile(req, res, pathname);
+  }
 
   notFound(req, res);
 };

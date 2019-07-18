@@ -17,18 +17,31 @@ ex after running delete('user.json'):
 
 Errors should also be logged (preferably in a human-readable format)
 */
+
 /**
- * Log values to log.txt and throws error if passed
+ * Log values to log.txt, sends to client and throws error if passed
  * @param {String} value
  * @param {Error} [err]
  * returns append file 
  */
-async function log(value, err) {
-  await fs.appendFile('log.txt', `${value} ${Date.now()}\n`);
-  // throw error if exists
-  if (err) throw err;
+async function log(value) {
+  if (value instanceof Error) {
+    await fs.appendFile(
+      'log.txt', `${value.message} ${Date.now()}\n`
+    );
+    throw value;
+  } else {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const logText = `${value} ${Date.now()}\n`;
+        await fs.appendFile('log.txt', logText);
+        resolve(logText);
+      } catch (err) {
+        reject(err.message);
+      }
+    });
+  }
 }
-
 
 /**
  * Logs the value of object[key]
@@ -52,11 +65,29 @@ async function log(value, err) {
 // }
 
 async function get(file, key) {
-  const data = await fs.readFile(file, 'utf-8');
-  const parsed = JSON.parse(data);
-  const value = parsed[key];
-  if (!value) return log(`ERROR ${key} invalid key on ${file}`);
-  return log(value);
+  try {  
+    const data = await fs.readFile(file, 'utf-8');
+    const parsed = JSON.parse(data);
+    const value = parsed[key];
+    if (!value) return log(`ERROR ${key} invalid key on ${file}`);
+    return log(value).then(() => value);
+  } catch (err) {
+    log(`ERROR ${err}`);
+  }
+}
+/**
+ * Get file info
+ * @param {String} file 
+ */
+function getFile(file) {
+  return fs
+    .readFile(file, 'utf8')
+    .then(data => {
+      const parsed = JSON.parse(data);
+      if (!parsed) return log('ERROR: Invalid file');
+      return log(JSON.stringify(parsed)).then(() => parsed);
+    })
+    .catch(err => log('ERROR, err'));
 }
 
 /**
@@ -85,7 +116,8 @@ function remove(file, key) {
     .then(data => {
       const parsed = JSON.parse(data);
       delete parsed[key];
-      return fs.writeFile(file, JSON.stringify(parsed));
+      fs.writeFile(file, JSON.stringify(parsed));
+      return log(`${key} deleted from ${file}`);
     })
     .catch(err => log(`ERROR ${err}`));
 }
@@ -251,4 +283,5 @@ module.exports = {
   union,
   intersect,
   difference,
+  getFile
 };
