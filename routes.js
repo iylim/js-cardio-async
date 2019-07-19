@@ -1,5 +1,5 @@
 const url = require('url');
-const { getHome, getFile, getStatus, setDB, notFound, postWrite, getValue, deleteValue, deleteFile, mergeFile } = require('./controller');
+const { getHome, getFile, getStatus, setDB, notFound, postWrite, getValue, deleteValue, deleteFile, mergeFile, unionFiles, intersectFiles, differenceFiles } = require('./controller');
 
 const handleRoutes = (req, res) => {
   // parse url to an object
@@ -40,6 +40,18 @@ const handleRoutes = (req, res) => {
 
   if (pathname === '/merge' && req.method === 'POST') {
     return mergeFile(req, res);
+  }
+
+  if (pathname.startsWith('/union') && req.method === 'POST') {
+    return unionFiles(req, res, query);
+  }
+
+  if (pathname.startsWith('/intersect') && req.method === 'POST') {
+    return intersectFiles(req, res, query);
+  }
+
+  if (pathname.startsWith('/difference') && req.method === 'POST') {
+    return differenceFiles(req, res, query);
   }
 
   notFound(req, res);

@@ -205,7 +205,7 @@ async function union(fileA, fileB) {
     for (const key2 in parsedB) {
       if (!array.includes(key2)) array.push(key2);
     }
-    return fs.appendFile('log.txt', `${JSON.stringify(array)}\n`);
+    return fs.appendFile('log.txt', `${JSON.stringify(array)}\n`).then(() => array);
   } catch (err) {
     log(`ERROR ${err}`);
   }
@@ -233,7 +233,7 @@ async function intersect(fileA, fileB) {
         }
       }
     }
-    return fs.appendFile('log.txt', `${JSON.stringify(array)}\n`);
+    return fs.appendFile('log.txt', `${JSON.stringify(array)}\n`).then(() => array);
   } catch (err) {
     log(`ERROR ${err}`);
   }
@@ -264,7 +264,7 @@ async function difference(fileA, fileB) {
         array.push(key2);
       }
     }
-    return fs.appendFile('log.txt', `${JSON.stringify(array)}\n`);
+    return fs.appendFile('log.txt', `${JSON.stringify(array)}\n`).then(() => array);
   } catch (err) {
     log(`ERROR ${err}`);
   }

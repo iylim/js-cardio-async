@@ -208,12 +208,56 @@ exports.deleteFile = (req, res, pathname) => {
     });
 };
 
+/**
+ * Merge files
+ * @param {Object} [req]
+ * @param {Object} res
+ */
 exports.mergeFile = (req, res) => {
   db.mergeData()
     .then(() => {
       res.writeHead(200);
       return res.end(`Files merged`);
     })
+    .catch(err => {
+      res.writeHead(400, {
+        'Content-Type': 'application/json',
+      });
+      return res.end(JSON.stringify(err));
+    });
+};
+
+exports.unionFiles = (req, res, { fileA, fileB }) => {
+  db.union(fileA, fileB).then(data => {
+    res.writeHead(200);
+    return res.end(JSON.stringify(data));
+  })
+    .catch(err => {
+      res.writeHead(400, {
+        'Content-Type': 'application/json',
+      });
+      return res.end(JSON.stringify(err));
+    });
+};
+
+exports.intersectFiles = (req, res, { fileA, fileB }) => {
+  db.intersect(fileA, fileB).then(data => {
+    res.writeHead(200);
+    return res.end(JSON.stringify(data));
+  })
+    .catch(err => {
+      res.writeHead(400, {
+        'Content-Type': 'application/json',
+      });
+      return res.end(JSON.stringify(err));
+    });
+};
+
+exports.differenceFiles = (req, res, { fileA, fileB }) => {
+  db.difference(fileA, fileB).then(data => {
+    res.writeHead(200);
+    return res.end(JSON.stringify(data));
+  })
     .catch(err => {
       res.writeHead(400, {
         'Content-Type': 'application/json',
