@@ -1,5 +1,5 @@
 const url = require('url');
-const { getHome, getFile, getStatus, setDB, notFound, postWrite, getValue, deleteValue, deleteFile } = require('./controller');
+const { getHome, getFile, getStatus, setDB, notFound, postWrite, getValue, deleteValue, deleteFile, mergeFile } = require('./controller');
 
 const handleRoutes = (req, res) => {
   // parse url to an object
@@ -36,6 +36,10 @@ const handleRoutes = (req, res) => {
 
   if (pathname.startsWith('/delete/') && req.method === 'DELETE') {
     return deleteFile(req, res, pathname);
+  }
+
+  if (pathname === '/merge' && req.method === 'POST') {
+    return mergeFile(req, res);
   }
 
   notFound(req, res);

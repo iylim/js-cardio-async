@@ -207,3 +207,17 @@ exports.deleteFile = (req, res, pathname) => {
       return res.end(JSON.stringify(err));
     });
 };
+
+exports.mergeFile = (req, res) => {
+  db.mergeData()
+    .then(() => {
+      res.writeHead(200);
+      return res.end(`Files merged`);
+    })
+    .catch(err => {
+      res.writeHead(400, {
+        'Content-Type': 'application/json',
+      });
+      return res.end(JSON.stringify(err));
+    });
+};

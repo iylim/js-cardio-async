@@ -21,3 +21,4 @@ ERROR TypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be one of type 
 {} 1563489560023
 [object Promise] 1563489577691
 andrew.json deleted! 1563489821108
+["username","poop"]["firstname","lastname","email"]{"andrew":{"firstname":"andy","lastname":"Maney","email":"amaney@talentpath.com"},"dean":{"firstname":"dean","lastname":"Sumitro","glasses":"true"},"post":{"title":"Async/Await lesson","description":"How to write asynchronous JavaScript","date":"July 15, 2019"},"scott":{"firstname":"Scott","lastname":"Roberts","email":"sroberts@talentpath.com","username":"scoot","poop":true}}{"andrew":{"firstname":"andy","lastname":"Maney","email":"amaney@talentpath.com"},"dean":{"firstname":"dean","lastname":"Sumitro","glasses":"true"},"post":{"title":"Async/Await lesson","description":"How to write asynchronous JavaScript","date":"July 15, 2019"},"scott":{"firstname":"Scott","lastname":"Roberts","email":"sroberts@talentpath.com","username":"scoot","poop":true}}
