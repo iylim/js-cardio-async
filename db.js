@@ -17,13 +17,30 @@ ex after running delete('user.json'):
 
 Errors should also be logged (preferably in a human-readable format)
 */
+
 /**
- * Log values to log.txt
+ * Log values to log.txt, sends to client and throws error if passed
  * @param {String} value
+ * @param {Error} [err]
  * returns append file 
  */
-function log(value) {
-  return fs.appendFile('log.txt', `${value} ${Date.now()}\n`);
+async function log(value) {
+  if (value instanceof Error) {
+    await fs.appendFile(
+      'log.txt', `${value.message} ${Date.now()}\n`
+    );
+    throw value;
+  } else {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const logText = `${value} ${Date.now()}\n`;
+        await fs.appendFile('log.txt', logText);
+        resolve(logText);
+      } catch (err) {
+        reject(err.message);
+      }
+    });
+  }
 }
 
 /**
@@ -48,11 +65,29 @@ function log(value) {
 // }
 
 async function get(file, key) {
-  const data = await fs.readFile(file, 'utf-8');
-  const parsed = JSON.parse(data);
-  const value = parsed[key];
-  if (!value) return log(`ERROR ${key} invalid key on ${file}`);
-  return log(value);
+  try {  
+    const data = await fs.readFile(file, 'utf-8');
+    const parsed = JSON.parse(data);
+    const value = parsed[key];
+    if (!value) return log(`ERROR ${key} invalid key on ${file}`);
+    return log(value).then(() => value);
+  } catch (err) {
+    log(`ERROR ${err}`);
+  }
+}
+/**
+ * Get file info
+ * @param {String} file 
+ */
+function getFile(file) {
+  return fs
+    .readFile(file, 'utf8')
+    .then(data => {
+      const parsed = JSON.parse(data);
+      if (!parsed) return log('ERROR: Invalid file');
+      return log(JSON.stringify(parsed)).then(() => parsed);
+    })
+    .catch(err => log('ERROR, err'));
 }
 
 /**
@@ -68,7 +103,7 @@ function set(file, key, value) {
     const string = JSON.stringify(parsed);
     return fs.writeFile(file, string);
   })
-    .catch(err => log(`ERROR ${err}`));
+    .catch(err => log(`ERROR ${err}`, err));
 }
 
 /**
@@ -81,7 +116,8 @@ function remove(file, key) {
     .then(data => {
       const parsed = JSON.parse(data);
       delete parsed[key];
-      return fs.writeFile(file, JSON.stringify(parsed));
+      fs.writeFile(file, JSON.stringify(parsed));
+      return log(`${key} deleted from ${file}`);
     })
     .catch(err => log(`ERROR ${err}`));
 }
@@ -102,10 +138,15 @@ function deleteFile(file) {
  * Gracefully errors if the file already exists.
  * @param {string} file JSON filename
  */
-function createFile(file) {
-  return fs.writeFile(file)
-    .then(() => log(`${file} created!`))
-    .catch(err => log(`ERROR ${err}`));
+async function createFile(file, content) {
+  try {
+    if (fs.existSync(file)) {
+      await fs.readFile(file, 'utf-8');
+    }
+    await fs.writeFile(file, JSON.stringify(content));
+  } catch (err) {
+    log(`ERROR ${err}`);
+  }
 }
 
 /**
@@ -137,7 +178,7 @@ async function mergeData() {
       const fileName = filtered[i].slice(0, filtered[i].indexOf('.'));
       object[fileName] = parsed;
     }
-    return fs.appendFile('log.txt', JSON.stringify(object));
+    return fs.appendFile('log.txt', `${JSON.stringify(object)}\n`);
   } catch (err) {
     log(`ERROR ${err}`);
   }
@@ -164,7 +205,7 @@ async function union(fileA, fileB) {
     for (const key2 in parsedB) {
       if (!array.includes(key2)) array.push(key2);
     }
-    return fs.appendFile('log.txt', JSON.stringify(array));
+    return fs.appendFile('log.txt', `${JSON.stringify(array)}\n`).then(() => array);
   } catch (err) {
     log(`ERROR ${err}`);
   }
@@ -192,7 +233,7 @@ async function intersect(fileA, fileB) {
         }
       }
     }
-    return fs.appendFile('log.txt', JSON.stringify(array));
+    return fs.appendFile('log.txt', `${JSON.stringify(array)}\n`).then(() => array);
   } catch (err) {
     log(`ERROR ${err}`);
   }
@@ -223,13 +264,16 @@ async function difference(fileA, fileB) {
         array.push(key2);
       }
     }
-    return fs.appendFile('log.txt', JSON.stringify(array));
+    return fs.appendFile('log.txt', `${JSON.stringify(array)}\n`).then(() => array);
   } catch (err) {
     log(`ERROR ${err}`);
   }
 }
 
+const PORT = 5000;
+
 module.exports = {
+  PORT,
   get,
   set,
   remove,
@@ -239,4 +283,5 @@ module.exports = {
   union,
   intersect,
   difference,
+  getFile
 };
